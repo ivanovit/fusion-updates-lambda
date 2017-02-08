@@ -1,49 +1,44 @@
-const requestPromise = require('request-promise'),
+var requestPromise = require('request-promise'),
 	  url = require('url'),
 	  config = require('./config.json'),
 	  semver = require('semver');
 
-class UpdatesLambda {
-	getResource(event, context, callback) {
-		this._getLatestReleaseForChannel(event.pathParameters.channel)
-			.then(latestRelease => {
-				const redirectUrl = url.resolve(config.packagesLocation, `${latestRelease}/${event.pathParameters.platform}/${event.pathParameters.file}`);
-
-				context.succeed({
-					statusCode: 302,
-					headers: {
-						'Location': redirectUrl
-					},
-					body: `Found. Redirecting to ${redirectUrl}`
-				});
-			});
-	}
-
-	getLatest(event, context, callback) {
-		this._getLatestReleaseForChannel(event.pathParameters.channel)
-			.then(latestRelease => {
-				if(semver.lt(clientVersion, latestRelease, true)) {
-					context.succeed({
-						statusCode: 200,
-						body: {
-							"url": url.resolve(config.packagesLocation, `${latestRelease}/mac/Fusion-${latestRelease}-mac.zip`)
-						}
-					});
-				} else {
-					context.succeed({
-						statusCode: 204,
-						body: {
-						}
-					});
-				}
-			});
-	}
-
-	_getLatestReleaseForChannel() {
-		//TODO: missing channel exception
-		var channelLocation = url.resolve(config.location, `channel/${channel}.release`);
-    	return  requestPromise.get(channelLocation);
-	}
+function getLatestReleaseForChannel(channel) {
+	return  requestPromise.get(url.resolve(config.packagesLocation, `channel/${channel}.release`));
 }
 
-module.exports = new UpdatesLambda();
+exports.getResource = function(event, context, callback) {
+	getLatestReleaseForChannel(event.pathParameters.channel)
+	.then(latestRelease => {
+		const redirectUrl = url.resolve(config.packagesLocation, `${latestRelease}/${event.pathParameters.platform}/${event.pathParameters.file}`);
+
+		context.succeed({
+			statusCode: 302,
+			headers: {
+				'Location': redirectUrl
+			},
+			body: `Found. Redirecting to ${redirectUrl}`
+		});
+	});
+}
+
+exports.getLatest = function(event, context, callback) {
+	getLatestReleaseForChannel(event.pathParameters.channel)
+	.then(latestRelease => {
+		latestRelease = "0.0.0-2016.1";
+		if(semver.lt(event.queryStringParameters.clientVersion, latestRelease, true)) {
+			context.succeed({
+				statusCode: 200,
+				headers: {},
+				body: JSON.stringify({
+					"url": url.resolve(config.packagesLocation, `${latestRelease}/mac/Fusion-${latestRelease}-mac.zip`)
+				})
+			});
+		} else {
+			context.succeed({
+				statusCode: 204,
+				body: ""
+			});
+		}
+	});
+}
