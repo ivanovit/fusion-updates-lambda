@@ -1,4 +1,6 @@
 event.json
 Gruntfile.js
 dist
+api-gateway
+.vscode
 *.iml

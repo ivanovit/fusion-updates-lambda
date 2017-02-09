@@ -1,7 +1,9 @@
 var requestPromise = require('request-promise'),
-	  url = require('url'),
-	  config = require('./config.json'),
-	  semver = require('semver');
+	url = require('url'),
+	semver = require('semver'),
+	config = { 
+		packagesLocation: 'http://dy0uugugdpwse.cloudfront.net/ab/fusion/' 
+	};
 
 function getLatestReleaseForChannel(channel) {
 	return  requestPromise.get(url.resolve(config.packagesLocation, `channel/${channel}.release`));
@@ -25,19 +27,18 @@ exports.getResource = function(event, context, callback) {
 exports.getLatest = function(event, context, callback) {
 	getLatestReleaseForChannel(event.pathParameters.channel)
 	.then(latestRelease => {
-		latestRelease = "0.0.0-2016.1";
 		if(semver.lt(event.queryStringParameters.clientVersion, latestRelease, true)) {
 			context.succeed({
 				statusCode: 200,
 				headers: {},
 				body: JSON.stringify({
-					"url": url.resolve(config.packagesLocation, `${latestRelease}/mac/Fusion-${latestRelease}-mac.zip`)
+					'url': url.resolve(config.packagesLocation, `${latestRelease}/mac/Fusion-${latestRelease}-mac.zip`)
 				})
 			});
 		} else {
 			context.succeed({
 				statusCode: 204,
-				body: ""
+				body: ''
 			});
 		}
 	});
