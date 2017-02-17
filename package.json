@@ -21,8 +21,9 @@
     "semver": "^5.3.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.10.0",
     "grunt": "^1.0.1",
     "grunt-aws-lambda": "^0.13.0",
-    "aws-sdk": "^2.10.0"
+    "grunt-replace": "^1.0.1"
   }
 }
