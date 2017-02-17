@@ -24,8 +24,8 @@ node("linux") {
 
             stage("Upload results") {
                 docker.image("anigeo/awscli").inside("-e AWS_DEFAULT_REGION=us-east-1") {
-                    withCredentials([[$class: "StringBinding", credentialsId: "aws_access_key_id", variable: "AWS_ACCESS_KEY_ID"],
-                        [$class: "StringBinding", credentialsId: "aws_secret_access_key", variable: "AWS_SECRET_ACCESS_KEY"]]) {
+                    withCredentials([[$class: "StringBinding", credentialsId: "private_aws_access_key_id", variable: "AWS_ACCESS_KEY_ID"],
+                        [$class: "StringBinding", credentialsId: "private_aws_secret_access_key", variable: "AWS_SECRET_ACCESS_KEY"]]) {
                             sh ("aws s3 cp dist  ${amazonBucket} --recursive --exclude \"*\" --include \"fusion_updates_service*.zip\"")
                     }
                 }
