@@ -1,5 +1,5 @@
 {
-  "name": "fusion-updates-lambda",
+  "name": "fusion_updates_service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

@@ -4,12 +4,11 @@ var grunt = require('grunt'),
 	stage = grunt.option('stage') || 'dev',
 	region = grunt.option('region') || "eu-central-1",
 	restApiId = grunt.option('restApiId'),
-	accountId = grunt.option('accountId');
+	accountId = grunt.option('accountId'),
+	buildVersion = grunt.option('buildVersion') || "";
 
-console.log(restApiId);
-
-if(!restApiId) { grunt.fail.warn(`Missing options restApiId`) }
-if(!accountId) { grunt.fail.warn(`Missing options accountId`) }
+//if(!restApiId) { grunt.fail.warn(`Missing options restApiId`) }
+//if(!accountId) { grunt.fail.warn(`Missing options accountId`) }
 
 grunt.initConfig({
    lambda_deploy: {
@@ -35,7 +34,11 @@ grunt.initConfig({
 	  }
    },
    lambda_package: {
-		all: {}
+		all: {
+			options: {
+				include_time: false
+			}
+		}
    },
    api_gateway_deploy: {
 	   default: {
@@ -62,7 +65,12 @@ grunt.initConfig({
           { expand: true, flatten: true, src: ['./api-gateway/updates-api-swagger.json'], dest: './dist/'}
         ]
       }
-    }
+    },
+		add_build_version: {
+			default: {
+				buildVersion: buildVersion
+			}
+		}
 });
 
 grunt.loadNpmTasks('grunt-aws-lambda');
@@ -79,6 +87,16 @@ grunt.registerMultiTask('api_gateway_deploy', 'Upload api gateway from swagger j
 				.then(data => apiGateway.createDeployment(restApiId, stage))
 				.then(done)
 				.catch(grunt.fail.warn);
+});
+
+grunt.registerMultiTask('add_build_version', 'test', function() {
+	var packageJsonPath = 'package.json',
+			packageJson = grunt.file.readJSON(packageJsonPath),
+			buildVersion = this.data.buildVersion;
+	
+	packageJson.version = buildVersion ? `${packageJson.version}-${buildVersion}` : packageJson.version;
+
+	grunt.file.write(packageJsonPath, JSON.stringify(packageJson, null, 2));
 });
 
 grunt.registerTask('deploy', ['lambda_package:all', 'lambda_deploy:getLatest', 'lambda_deploy:getResource', 'replace:apiGatewaySwagger', 'api_gateway_deploy']);
