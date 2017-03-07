@@ -12,6 +12,7 @@ function getLatestReleaseForChannel(channel) {
 exports.getResource = function(event, context, callback) {
 	getLatestReleaseForChannel(event.pathParameters.channel)
 	.then(latestRelease => {
+		console.log(latestRelease);
 		var redirectUrl;
 		if(latestRelease.pathPrefix) {
 			redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.pathPrefix}/${latestRelease.version}/${event.pathParameters.platform}/${event.pathParameters.file}`);
@@ -32,6 +33,7 @@ exports.getResource = function(event, context, callback) {
 exports.getLatest = function(event, context, callback) {
 	getLatestReleaseForChannel(event.pathParameters.channel)
 	.then(latestRelease => {
+		console.log(latestRelease);
 		if(semver.lt(event.queryStringParameters.clientVersion, latestRelease.version, true)) {
 			var redirectUrl;
 			if(latestRelease.pathPrefix) {
