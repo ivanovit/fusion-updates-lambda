@@ -2,7 +2,7 @@ var requestPromise = require('request-promise'),
 	url = require('url'),
 	semver = require('semver'),
 	config = { 
-		packagesLocation: 'http://dy0uugugdpwse.cloudfront.net/ab/fusion/' 
+		packagesLocation: 'https://dy0uugugdpwse.cloudfront.net/ab/fusion/' 
 	};
 
 function getLatestReleaseForChannel(channel) {
@@ -35,9 +35,9 @@ exports.getLatest = function(event, context, callback) {
 		if(semver.lt(event.queryStringParameters.clientVersion, latestRelease.version, true)) {
 			var redirectUrl;
 			if(latestRelease.pathPrefix) {
-				redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.pathPrefix}/${latestRelease.version}/mac/Fusion-${latestRelease}-mac.zip`);
+				redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.pathPrefix}/${latestRelease.version}/mac/Fusion-${latestRelease.version}-mac.zip`);
 			} else {
-				redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.version}/mac/Fusion-${latestRelease}-mac.zip`);
+				redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.version}/mac/Fusion-${latestRelease.version}-mac.zip`);
 			}
 			
 			context.succeed({
