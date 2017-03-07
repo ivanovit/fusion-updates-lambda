@@ -12,7 +12,7 @@ function getLatestReleaseForChannel(channel) {
 exports.getResource = function(event, context, callback) {
 	getLatestReleaseForChannel(event.pathParameters.channel)
 	.then(latestRelease => {
-		const redirectUrl;
+		var redirectUrl;
 		if(latestRelease.pathPrefix) {
 			redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.pathPrefix}/${latestRelease.version}/${event.pathParameters.platform}/${event.pathParameters.file}`);
 		} else {
@@ -33,7 +33,7 @@ exports.getLatest = function(event, context, callback) {
 	getLatestReleaseForChannel(event.pathParameters.channel)
 	.then(latestRelease => {
 		if(semver.lt(event.queryStringParameters.clientVersion, latestRelease.version, true)) {
-			const redirectUrl;
+			var redirectUrl;
 			if(latestRelease.pathPrefix) {
 				redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.pathPrefix}/${latestRelease.version}/mac/Fusion-${latestRelease}-mac.zip`);
 			} else {
