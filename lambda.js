@@ -32,7 +32,7 @@ exports.getResource = function(event, context, callback) {
 exports.getLatest = function(event, context, callback) {
 	getLatestReleaseForChannel(event.pathParameters.channel)
 	.then(latestRelease => {
-		if(semver.lt(event.queryStringParameters.clientVersion, latestRelease.version, true)) {
+		if(semver.lt(event.queryStringParameters.currentVersion, latestRelease.version, true)) {
 			var redirectUrl;
 			if(latestRelease.pathPrefix) {
 				redirectUrl = url.resolve(config.packagesLocation, `${latestRelease.pathPrefix}/${latestRelease.version}/mac/Fusion-${latestRelease.version}-mac.zip`);
